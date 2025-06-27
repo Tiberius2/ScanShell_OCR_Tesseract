@@ -1,4 +1,4 @@
-# Tesseract OCT + Scanner Handling (Momentarily for Scanshell 800r
+# Tesseract OCT + Scanner Handling (Momentarily for Scanshell 800r)
 
 A simple windows forms app to help with the process of scanning a romanian ID document and extracting the text from the MRZ lines
 = Processing the image to prepare it for OCR
