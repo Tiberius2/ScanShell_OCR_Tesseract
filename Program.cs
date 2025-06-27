@@ -1,5 +1,5 @@
-﻿using Newtonsoft.Json;
-using ScanShell_OCR.HelperClasses;
+﻿using DynamicDOTNET;
+using Newtonsoft.Json;
 using System;
 using System.IO;
 using System.Windows.Forms;
