@@ -1,5 +1,4 @@
 ﻿using Newtonsoft.Json;
-using ScanShell_OCR.HelperClasses;
 using System;
 using System.Drawing;
 using System.IO;
@@ -18,6 +17,67 @@ namespace ScanShell_OCR
         public MainForm()
         {
             InitializeComponent();
+        }
+
+        private void pipelineButton_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                lblStatus.Text = "Scanning...";
+                Application.DoEvents();
+                string scanPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), "NewScanned_ID.jpg");
+                ScannerService.ScanImage(scanPath);
+                picScannedImage.Image = Image.FromFile(scanPath);
+
+                lblStatus.Text = "Preprocessing Image...";
+                Application.DoEvents();
+                string ProcessedImagePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), "Processed_ID.jpg");
+                ImageProcessing.PreprocessImage(scanPath, processedImagePath);
+                cropedPicture.Image = Image.FromFile(processedImagePath);
+
+                string tessDataPath = @"C:\Users\ionut.tiprigan\source\repos\DynamicDOTNET\packages\Tesseract.5.2.0\build\tessdata";
+                string debugPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), "OCR_Debug.jpg");
+
+                lblStatus.Text = "Extracting text...";
+                Application.DoEvents();
+                var rawText = OCRService.ExtractText(processedImagePath, tessDataPath, debugPath);
+
+                string filePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), "Extracted_Text.txt");
+                File.WriteAllText(filePath, rawText);
+                txtExtractedText.Text = rawText;
+                debugPicture.Image = Image.FromFile(debugPath);
+
+                lblStatus.Text = "Parsing MRZ Lines...";
+                Application.DoEvents();
+                string[] lines = File.ReadAllLines(filePath);
+                if (lines.Length < 2)
+                {
+                    MessageBox.Show("The MRZ file must contain at least 2 lines");
+                    return;
+                }
+                string sharedFolder = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"..\..\..\..\SharedResources");
+                var mapper = new CodeMapper(
+                    Path.Combine(sharedFolder, "CountryCodes.json"),
+                    Path.Combine(sharedFolder, "CountyCodes.json"),
+                    Path.Combine(sharedFolder, "Nationalities.json")
+                );
+
+                var result = ParseMRZ.ParserMRZLine1(lines[0], mapper);
+                ParseMRZ.ParseMRZLine2(lines[1], result, mapper);
+
+                string output = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), "ParsedMRZ_Lines.json");
+                string json = JsonConvert.SerializeObject(result, Formatting.Indented);
+                File.WriteAllText(output, json);
+
+                lblStatus.Text = "Done!";
+                Application.DoEvents();
+                MessageBox.Show("ID scanned, extracted and parsed the MRZ lines sucessfully to: \n\n" + json);
+            }
+            catch (Exception ex)
+            {
+                lblStatus.Text = " ERROR!";
+                MessageBox.Show("Pipeline failed: \n" + ex.Message);
+            }
         }
 
         // SCAN BUTTON
@@ -58,10 +118,10 @@ namespace ScanShell_OCR
                 txtExtractedText.Text = null;
             }
 
-            if (debugPicture.Image != null)
+            if (cropedPicture.Image != null)
             {
-                debugPicture.Image.Dispose();
-                debugPicture.Image = null;
+                cropedPicture.Image.Dispose();
+                cropedPicture.Image = null;
             }
             lblStatus.Text = "Image cleared!";
             hasSelectedImage = false;
@@ -89,7 +149,7 @@ namespace ScanShell_OCR
             File.WriteAllText(filePath, rawText);
 
             picScannedImage.Image = Image.FromFile(processedImagePath);
-            debugPicture.Image = Image.FromFile(debugImage);
+            cropedPicture.Image = Image.FromFile(debugImage);
             lblStatus.Text = "Text extraction complete!";
         }
 
@@ -161,6 +221,5 @@ namespace ScanShell_OCR
 
             MessageBox.Show("MRZ lines parsed and saved successfully: \n\n" + json);
         }
-
     }
 }
