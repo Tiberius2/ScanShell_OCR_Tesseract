@@ -7,14 +7,14 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Scanshell_OCR.Core", "..\Sc
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Scanshell_OCR.API", "..\Scanshell_OCR.API\Scanshell_OCR.API.csproj", "{76EF3628-EFE8-41AE-8013-9B98FE75C04D}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SharedResources", "SharedResources", "{3C149DCC-0A56-43A0-A98E-CEBD4489E4BC}"
-	ProjectSection(SolutionItems) = preProject
-		SharedResources\CountryCodes.json = SharedResources\CountryCodes.json
-		SharedResources\CountyCodes.json = SharedResources\CountyCodes.json
-		SharedResources\Nationalities.json = SharedResources\Nationalities.json
-	EndProjectSection
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Scanshell_OCR.UI", "..\Scanshell_OCR.UI\Scanshell_OCR.UI.csproj", "{655A60AF-908B-40C7-9D40-36AC0C8CFABD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Scanshell_OCR.UI", "..\Scanshell_OCR.UI\Scanshell_OCR.UI.csproj", "{655A60AF-908B-40C7-9D40-36AC0C8CFABD}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SharedResources", "SharedResources", "{FB72FE44-771A-475F-BC08-563F4B4C340D}"
+	ProjectSection(SolutionItems) = preProject
+		..\SharedResources\CountryCodes.json = ..\SharedResources\CountryCodes.json
+		..\SharedResources\CountyCodes.json = ..\SharedResources\CountyCodes.json
+		..\SharedResources\Nationalities.json = ..\SharedResources\Nationalities.json
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
